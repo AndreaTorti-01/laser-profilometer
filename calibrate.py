@@ -5,12 +5,12 @@ import pickle # serializing and de-serializing Python object structures
 import os
 
 # ===== Settings =====
-imgsfolder = "images" # folder containing the images
-chessboardSize = (6, 6) # number of INNER CORNERS of the checkerboard
+imgsfolder = "laser_plane_extraction_images" # folder containing the images
+chessboardSize = (11, 6) # number of INNER CORNERS of the checkerboard
 squareSize = 0.024 # size of the squares in meters
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001) # termination criteria for the subpixel iterative algorithm
 images = glob.glob(imgsfolder + '/*.png') # get all the images in the folder
-flags = None # flags for findChessboardCorners
+flags = cv2.CALIB_CB_ADAPTIVE_THRESH + cv2.CALIB_CB_NORMALIZE_IMAGE  # flags for findChessboardCorners
 # flags = cv2.CALIB_CB_ADAPTIVE_THRESH + cv2.CALIB_CB_NORMALIZE_IMAGE 
 
 # ===== Code =====
