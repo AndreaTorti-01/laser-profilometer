@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import glob, os
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 # --- Parameters ---
 calib_folder = "log_reconstruction/laser_plane_calibration"
@@ -79,12 +80,40 @@ board_pts = all_boards[idx]
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
-# plot all chessboards
+# build and sort quad faces for chessboards using row-major ordering
+nx, ny = pattern_size
+chess_faces = []
 for pts in all_boards:
-    ax.scatter(pts[:,0], pts[:,1], pts[:,2], s=5, c='b', alpha=0.3)
+    grid = pts.reshape(ny, nx, 3)   # swap dims: rows, cols
+    for j in range(ny-1):
+        for i in range(nx-1):
+            quad = [
+                grid[j,   i],
+                grid[j,   i+1],
+                grid[j+1, i+1],
+                grid[j+1, i]
+            ]
+            depth = np.mean([v[2] for v in quad])
+            chess_faces.append((depth, quad))
 
-# highlight chosen board
-ax.scatter(board_pts[:,0], board_pts[:,1], board_pts[:,2], s=20, c='r')
+# draw quads from farthest to nearest
+for _, quad in sorted(chess_faces, key=lambda x: x[0], reverse=True):
+    poly = Poly3DCollection([quad], facecolors='cyan', edgecolors='gray', alpha=0.3)
+    ax.add_collection3d(poly)
+
+# highlight chosen board with quad faces
+hb = board_pts.reshape(ny, nx, 3)
+hb_quads = []
+for j in range(ny-1):
+    for i in range(nx-1):
+        hb_quads.append([
+            hb[j,   i],
+            hb[j,   i+1],
+            hb[j+1, i+1],
+            hb[j+1, i]
+        ])
+highlight = Poly3DCollection(hb_quads, facecolors='red', edgecolors='k', alpha=0.5)
+ax.add_collection3d(highlight)
 
 # create plane mesh
 # pick extents from chosen board
