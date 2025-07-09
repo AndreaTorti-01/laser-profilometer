@@ -68,6 +68,13 @@ centroid = A.mean(axis=0)
 _,_,Vt = np.linalg.svd(A - centroid)
 normal = Vt[-1]
 D = -normal.dot(centroid)
+# save camera intrinsics + laser plane
+np.savez("calibration.npz",
+         cam_mtx=cam_mtx,
+         dist_coefs=dist_coefs,
+         plane_normal=normal,
+         plane_D=D)
+print("Calibration saved to calibration.npz")
 
 # --- 4) PICK ONE BOARD TO VISUALIZE ---
 print("Available boards:")
