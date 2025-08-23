@@ -1,0 +1,1 @@
+python3 laser_plane_plucker.py --calib-folder log_reconstruction/laser_plane_calibration && python3 laser_plane_ransac.py --calib-folder log_reconstruction/laser_plane_calibration && python3 compare_laser_planes.py --plucker calibration_plucker.npz --ransac calibration_ransac.npz --half-size 0.25
